@@ -1,7 +1,6 @@
 ## Welcome to GitHub 
 
-You can find the interesting subject I have selected from RConference 2018 [here]. use the [editor on GitHub](https://github.com/BOUN-ETM58D/pj-alpbiberoglu/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
-
+You can find the interesting subject I have selected from RStudio Conference 2018 [here](https://www.rstudio.com/resources/videos/open-source-solutions-for-medical-marijuana/). 
 Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
 ### Markdown
