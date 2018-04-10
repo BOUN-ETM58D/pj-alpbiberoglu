@@ -1,7 +1,6 @@
-## Welcome to GitHub 
+## Assignment 1 
 
-You can find the interesting subject I have selected from RStudio Conference 2018 [here](https://www.rstudio.com/resources/videos/open-source-solutions-for-medical-marijuana/). 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+- You can find the interesting subject I have selected from RStudio Conference 2018 [here](https://www.rstudio.com/resources/videos/open-source-solutions-for-medical-marijuana/). 
 
 ### Markdown
 
