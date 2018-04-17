@@ -1,8 +1,10 @@
 ---
-title: "Assignment-1"
+title: "assignment1"
 author: "Alp Biberoğlu"
-output: html_document
+date: "10 04 2018"
+output: word_document
 ---
+
 
 # Assignment-1
 
