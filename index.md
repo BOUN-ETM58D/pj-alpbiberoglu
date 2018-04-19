@@ -1,6 +1,6 @@
 # Assignment 2 (20.04.2018)
 
-- You can find the tidy analysis of OSYM data [here].
+- You can find the tidy analysis of OSYM data [here].(osym_data_analysis_template.html)
 
 # Assignment 1 (10.04.2018)
 
