@@ -1,0 +1,20 @@
+---
+title: "Assignment 1"
+author: "Alp Biberoglu"
+date: "26/02/2018"
+output: html_document
+---
+
+
+
+# Example 1 
+
+Here is my example 1
+
+# Example 2 - R for Data Science Book
+
+Here Example 2
+
+## Example 3 - Writing an R Package from Scratch
+
+Here example 2
