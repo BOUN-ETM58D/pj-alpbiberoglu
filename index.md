@@ -1,4 +1,8 @@
-# Assignment 2 (20.04.2018)
+# Assignment 3 - ML (WIP)
+
+- You will find results of ML assignment in [here] soon...
+
+# Assignment 2 - OSYM Data Analysis (20.04.2018)
 
 - You can find the tidy analysis of OSYM data [here](osym_data_analysis_template.html).
 
