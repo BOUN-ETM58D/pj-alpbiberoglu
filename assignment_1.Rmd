@@ -9,12 +9,12 @@ output: html_document
 
 # Example 1 
 
-Here is my example 1
+In energy sector, electricity market and price forecast is very important. Data mining and analysis is a good way of predicting future electricity prices with present data. Using R, various types of modeling can be used for this purpose. 
 
-# Example 2 - R for Data Science Book
+# Example 2 
 
 Here Example 2
 
-## Example 3 - Writing an R Package from Scratch
+# Example 3 
 
 Here example 2
