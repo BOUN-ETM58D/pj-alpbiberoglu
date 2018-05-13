@@ -1,0 +1,171 @@
+---
+title: "ML Part-1 WIP"
+author: "Alp Biberoğlu"
+date: "02 05 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This homework consists of 3 Assignments:
+
+* Assignment 1: Esoph and Young People Survey Data
+
+* Assignment 2: Diamonds Data
+
+* Assignment 3: Spam Data
+  
+# Assignment 1: Esoph and Young People Survey Data
+
+## Part-1: Esoph
+
+For this assignment, we are going to use built-in data set named "esoph". We call this data by just typing "esoph" to the console.
+
+```{r}
+esoph
+```
+
+We can also see a summary of this data with the "summary" function:
+
+```{r}
+summary(esoph)
+```
+
+This is the data that shows esophageal cancer rates depending on age, alcohol consumption and tobacco consumption. In this assignment, we want to see how each of these parameters effect the number of cancer cases.
+
+The best way to do is to plot some graphs that show number of cases as a percentage of total number of control patients as per the data we want. 
+
+To do this, we need to group and summarize our data. It can be seen that the data itself is already grouped by the agegp column, so we can start from the effect of age.
+
+Let's load necessary packages:
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+Then we summarise the data and in "summarise" function we need to show the math of percentage:
+
+```{r}
+age_effect <- esoph %>% group_by(agegp) %>%
+    summarise(tot_rows = n(), people_cancer = sum(ncases), people_total = sum(ncontrols),
+              percentage=people_cancer*100/people_total)
+```
+
+In this code chunk, we summarise esoph data such that, tot_rows is the count of total rows in dataset, people_cancer is the total number of cases with cancer, and people_total is the overall control case number. We get the percentage with the formula. Now we need to plot the graph according to each age group:
+
+```{r}
+#Create the graph with ggplot
+ageplot <- ggplot(age_effect, aes(x=age_effect$agegp, y=age_effect$percentage, fill=agegp)) + geom_bar(stat = "identity")
+
+#Make the labelings and remove the legend which is not necessary:
+ageplot + labs(x="Age Groups",y="Percentage of Cancer cases", title= "Cancer Cases as per Age Groups") + theme(legend.position = "none")
+```
+
+From this plot, we can observe that cancer risk is higher in older people, as most cancer cases are seen in age groups of 65-74, 55-64 and 75+.
+
+Now, we can do the same application for alcohol consumption and tobacco consumption with small modifications:
+
+```{r}
+alcohol_effect <- esoph %>% group_by(alcgp) %>%
+    summarise(tot_rows = n(), people_cancer = sum(ncases), people_total = sum(ncontrols),
+              percentage=people_cancer*100/people_total)
+
+alcoholplot <- ggplot(alcohol_effect, aes(x=alcohol_effect$alcgp, y=alcohol_effect$percentage, fill=alcgp)) + geom_bar(stat = "identity")
+
+alcoholplot + labs(x="Alcohol Consumption",y="Percentage of Cancer cases", title= "Cancer Cases as per Alcohol consumption") + theme(legend.position = "none")
+
+```
+
+```{r}
+tobacco_effect <- esoph %>% group_by(tobgp) %>%
+    summarise(tot_rows = n(), people_cancer = sum(ncases), people_total = sum(ncontrols),
+              percentage=people_cancer*100/people_total)
+
+tobaccoplot <- ggplot(tobacco_effect, aes(x=tobacco_effect$tobgp, y=tobacco_effect$percentage, fill=tobgp)) + geom_bar(stat = "identity")
+
+tobaccoplot + labs(x="Tobacco Consumption",y="Percentage of Cancer cases", title= "Cancer Cases as per Tobacco consumption") + theme(legend.position = "none")
+
+```
+
+By looking at these bar graphs, the negative effect of both alcohol and tobacco consumption on people's health can be clearly seen. Cancer percentage increases with an increase in both tobacco consumption and alcohol consumption.
+
+
+
+* ##### Second Alternative Approach:
+
+While searching on the internet, I have found an alternative way of approaching the esoph data, which I want to share here directly, taken from "https://rdrr.io/r/datasets/esoph.html"
+
+This approach gives the output as a mosaic plot, which is a more complex multi dimensional plot. It shows more detailed information regarding correlations, however I found it more difficult to comprehend.
+
+```{r}
+require(stats)
+require(graphics) # for mosaicplot
+summary(esoph)
+## effects of alcohol, tobacco and interaction, age-adjusted
+model1 <- glm(cbind(ncases, ncontrols) ~ agegp + tobgp * alcgp,
+              data = esoph, family = binomial())
+anova(model1)
+## Try a linear effect of alcohol and tobacco
+model2 <- glm(cbind(ncases, ncontrols) ~ agegp + unclass(tobgp)
+                                         + unclass(alcgp),
+              data = esoph, family = binomial())
+summary(model2)
+## Re-arrange data for a mosaic plot
+ttt <- table(esoph$agegp, esoph$alcgp, esoph$tobgp)
+o <- with(esoph, order(tobgp, alcgp, agegp))
+ttt[ttt == 1] <- esoph$ncases[o]
+tt1 <- table(esoph$agegp, esoph$alcgp, esoph$tobgp)
+tt1[tt1 == 1] <- esoph$ncontrols[o]
+tt <- array(c(ttt, tt1), c(dim(ttt),2),
+            c(dimnames(ttt), list(c("Cancer", "control"))))
+mosaicplot(tt, main = "esoph data set", color = TRUE)
+```
+
+## Part-2: Young People Survey Data
+
+For this part, we are going to use the dataset "youth_responses.csv"
+
+First, we import the data:
+
+```{r}
+library(readr)
+youth_responses <- read_csv("youth_responses.csv")
+print(youth_responses)
+```
+
+# Assignment 2: Diamonds Data
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Assignment 3: Spam Data
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
