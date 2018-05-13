@@ -1,0 +1,27 @@
+---
+title: "Assignment 1"
+author: "Alp Biberoglu"
+date: "26/02/2018"
+output: html_document
+---
+
+# My Current Work:
+
+
+I currently work at Çalık Enerji as Electrical and Electronics Engineer. Our scope of work includes energy production, distribution, and mainly EPC contracting. I work in the EPC (Engineering, Procurement and Construction) department. We work project-based and our job is to complete power plants as turnkey projects. You can find below three examples where R might be utilized in my field of work:
+
+
+## Example 1 
+
+
+In energy sector, electricity market and price forecast is very important. Data mining and analysis is a good way of predicting future electricity prices with present data. Using R, various types of modeling can be used for this purpose.
+
+## Example 2 
+
+In our company, my department is responsible for EPC operations. In EPC business, procurement is an important line of work. In our company, there are big databases for the materials that the company has procured throughout previous and current projects, and the vendors that our company has previously worked with. Using R, these data can be worked on, to create statistical models and show our company's procurement history.
+
+## Example 3
+
+Electricity consumption analysis is very important in energy production and distribution sectors. Energy consumption data can be used to determine the energy necessity daily, weekly and monthly. Also, it is possible to see region by region electricity consumption and to forecast future energy requirement. for this purposes, current electricity consumption data can be analyzed with R.
+
+
