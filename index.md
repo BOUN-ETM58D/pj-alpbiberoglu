@@ -1,6 +1,10 @@
-# Assignment 3 - ML (WIP)
+# Assignment 3 - ML
 
-- You will find results of ML assignment in [here] soon...
+- You can find results of ML assignment Part-1 [here].
+
+- You will find results of ML assignment Part-2 [here] soon..
+
+- You can find results of ML assignment Part-3 [here].
 
 # Assignment 2 - OSYM Data Analysis (20.04.2018)
 
