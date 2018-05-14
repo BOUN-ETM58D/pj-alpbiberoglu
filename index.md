@@ -4,7 +4,7 @@
 
 - You will find results of ML assignment Part-2 [here] soon..
 
-- You can find results of ML assignment Part-3 [here].
+- You can find results of ML assignment Part-3 [here](assignment_spamdata.html).
 
 # Assignment 2 - OSYM Data Analysis (20.04.2018)
 
