@@ -1,0 +1,131 @@
+---
+title: "ML Part-3: Spam Data"
+author: "Alp Biberoğlu"
+date: "14 05 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Assignment 3: Spam Data
+
+We begin by loading necessary packages and the dataset:
+
+```{r}
+library(tidyverse)
+library(rpart)
+library(rpart.plot)
+load("~/Desktop/ETM 2018 Spring/ETM 58D/Assignments/data/spam_data.RData")
+head(spam_data)
+```
+
+We are requested to create a CART model to identify which mail is spam or not from the given dataset. In the class, we have done the same analysis to the Titanic data, so we can use a similar modeling as follows:
+
+```{r}
+spam_train <- spam_data %>% filter(train_test == 0) %>% select(-train_test)
+spam_model <- rpart(spam_or_not ~ ., data=spam_train)
+rpart.plot(spam_model)
+```
+
+We can comment on this tree as follows:
+
+* At the beginning, we are analyzing 100% of the data, and it is known that 39% of this is spam mail.
+
+* At the first node, data is divided according to the frequency of "$" sign (V53). The frequency is below 0.056 for 75% of all data, and over 0.056 for 25% of data.
+
+* For the data on left side, 23% is found to be spam.This time, the frequency of word "remove" is considered (V7). Let's look at the data with V7 frequency higher than 0.055. In this final node, the information is that: 
+
+  1- This data group makes the 7% of overall data.
+  
+  2- 91% of this data is marked as spam.
+  
+We can also choose which columns to be focused on:
+
+```{r}
+
+set.seed(39) #Set the random seed
+spam2 <-
+spam_data %>%
+select(V16,V20,V24,spam_or_not) %>% #Select only required columns
+filter(complete.cases(.)) %>% #Remove all NA including rows
+#Split the data into train and test
+mutate(train_test = ifelse(runif(nrow(.)) < 0.25,"test","train")) %>%
+tbl_df()
+print(spam2)
+
+
+```
+
+```{r}
+spam2_train <- spam2 %>% filter(train_test == "train") %>% select(-train_test)
+spam2_model <- rpart(spam_or_not ~ ., data=spam2_train)
+rpart.plot(spam2_model)
+```
+
+Here, I have chosen 3 key words which are highly possible to be seen in spam mails: 
+
+  + Free
+  
+  + Credit
+
+  + Money
+  
+Now when we look at the results, we see that majority of the data has low frequency of these words (67%) and the same data has a lower spam percentage (18%)
+
+On the other hand, when we look at the data that has high probability to contain these words, we observe that they make up 9% of the overall data and they have a very high spam percentage of 97%.
+
+I also add here the summary of my findings in this second example:
+
+```{r}
+summary(spam2_model)
+```
+
+One final analysis regarding CART is the out-of-sample analysis.
+
+First we begin with in-sample analysis of "spam_model" to see a prediction about the data:
+
+```{r}
+spam_in_sample <- predict(spam_model)
+print(head(spam_in_sample))
+```
+
+```{r}
+in_sample_prediction <-
+cbind(
+spam_in_sample %>% tbl_df %>%
+transmute(spam_data_predict = ifelse(spam_in_sample >= 0.5,1,0)),
+spam_train %>% tbl_df %>%
+transmute(spam_data_actual = ifelse(spam_or_not == 1, 1,0))
+) %>%
+mutate(correct_class = (spam_data_predict == spam_data_actual)) %>%
+group_by(correct_class) %>%
+summarise(count=n(),percentage=n()/nrow(.))
+print(in_sample_prediction)
+```
+
+This result means that our "predict" function was able to correctly tell whether a data is spam or not for 90% of all cases. This is a good prediction. Now, let's also try out-of-sample prediction:
+
+```{r}
+spam_data_test <- spam_data %>% filter(train_test==1) %>% select(-train_test)
+spam_data_predict <- predict(spam_model,newdata=spam_data_test)
+print(head(spam_data_predict))
+
+```
+
+
+```{r}
+out_of_sample_prediction <-
+cbind(
+spam_data_predict %>% tbl_df %>%
+transmute(spam_data_predict = ifelse(spam_data_predict >= 0.5,1,0)),
+spam_data_test %>% tbl_df %>%
+transmute(spam_data_actual = ifelse(spam_or_not == 1,1,0))
+) %>%
+mutate(correct_class = (spam_data_predict == spam_data_actual)) %>%
+group_by(correct_class) %>%
+summarise(count=n(),percentage=n()/nrow(.))
+print(out_of_sample_prediction)
+```
+It can be seen from this result that, out-of-sample prediction also works fine, enabling us to predict with 90% accuracy whether a mail is spam or not.
