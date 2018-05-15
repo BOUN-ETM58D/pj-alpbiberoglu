@@ -2,7 +2,7 @@
 
 - You can find results of ML assignment Part-1 [here](assignment-ml.html).
 
-- You will find results of ML assignment Part-2 [here] soon..
+- You will find results of ML assignment Part-2 [here](assignment_diamondsdata.html).
 
 - You can find results of ML assignment Part-3 [here](assignment_spamdata.html).
 
