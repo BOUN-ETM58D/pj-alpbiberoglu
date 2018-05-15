@@ -1,0 +1,137 @@
+---
+title: 'ML Part-2: Diamonds Data'
+author: "Alp Biberoğlu"
+date: "14 05 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# ML Assignment Part 2: Diamonds Data
+
+```{r}
+
+```
+
+In this part, we will try to find the price of a diamond using the "diamonds" data set which is embedded in R package "ggplot2".
+
+Before starting, we can look at a summary of the data:
+
+```{r}
+library(tidyverse)
+summary(diamonds)
+```
+
+The given data are as follows:
+
+  + Carat: Between 0.2 and 5.01
+  
+  + Cut: From "Fair" to "Ideal"
+  
+  + Color: Among D,E,F,G,H,I,J
+  
+  + Clarity
+  
+  + Depth: Between 43 and 79
+  
+  + Table
+  
+  + Price
+  
+  + Dimensions (x,y,z)
+
+We begin by creating train and test data with the given codes in assignment:
+
+
+```{r}
+set.seed(503)
+library(tidyverse)
+diamonds_test <- diamonds %>% mutate(diamond_id = row_number()) %>%
+group_by(cut, color, clarity) %>% sample_frac(0.2) %>% ungroup()
+diamonds_train <- anti_join(diamonds %>% mutate(diamond_id = row_number()),
+diamonds_test, by = "diamond_id")
+diamonds_train
+diamonds_test
+```
+
+
+As we want to make a prediction about price, we create our tree according to that. Also, I just want to see the effect of carat, cut, color and clarity on the diamond price:
+
+```{r}
+library(rpart)
+library(rpart.plot)
+data("diamonds")
+diamond_data <- diamonds %>% select(carat,cut,color,clarity,price)
+diamond_model <- rpart(price ~ ., data=diamond_data)
+rpart.plot(diamond_model)
+```
+
+When all data is considered in the first node, we can see that average price is 3933 dollars. When the tree is divided according to carat information, we can see that majority of the diamonds (65%) have lower carat values than 0.99, and they have lower average price of 1633 dollars. On the other hand, diamonds which have higher carat values are much more expensive with an average price of 8142 dollars. 
+
+We can look for a similar relationship between for example cut and price, this time by plotting:
+
+```{r}
+ggplot(aes(x = cut, y = price), data = diamonds) + 
+  geom_point(alpha = 0.5, size = 1, position = 'jitter',aes(color=cut)) 
+```
+
+Here we can observe that as cut goes from fair to ideal, price of diamond increases as expected.
+
+For price prediction, I have 8found a different model on the internet, and I would like to refer that model with some example (Reference:https://rstudio-pubs-static.s3.amazonaws.com/94067_d1fdfafd20b14725a2578647031760c2.html):
+
+
+```{r}
+library(memisc)
+m1 <- lm(I(log10(price)) ~ I(carat^(1/3)), data = diamonds)
+m2 <- update(m1,~ . +carat)
+m3 <- update(m2,~ . +cut)
+m4 <- update(m3,~ . +color)
+m5 <- update(m4,~ . +clarity)
+mtable(m1,m2,m3,m4,m5)
+```
+
+By using the function "lm", we create a linear model that predicts the diamond price with 5 steps.
+
+We will test this model with 2 random diamond data as follows:
+
+
+```{r}
+print(diamonds[1386,])
+print(diamonds[24596,])
+```
+
+```{r}
+thisDiamond <- data.frame(carat=0.31, cut='Very Good',
+                          color='G',clarity='VS2')
+modelEstimate <- predict(m5,newdata = thisDiamond,
+                         interval = "prediction",level = .95)
+10^modelEstimate
+```
+
+Actual price: 559
+
+Predicted price: 578
+
+Difference: 3.4%
+
+
+```{r}
+thisDiamond <- data.frame(carat=1.53, cut='Ideal',
+                          color='G',clarity='VS2')
+modelEstimate <- predict(m5,newdata = thisDiamond,
+                         interval = "prediction",level = .95)
+10^modelEstimate
+```
+
+Actual price: 12907
+
+Predicted price: 12384
+
+Difference: 4%
+
+So, we can say that this linear model can make a good prediction with approximately 3-4% deviation from original price.
+
+
+
