@@ -1,5 +1,5 @@
 ---
-title: "ML Part-1 WIP"
+title: "ML Part-1: Esoph and Young People Survey Data"
 author: "Alp Biberoğlu"
 date: "02 05 2018"
 output: html_document
@@ -131,39 +131,51 @@ For this part, we are going to use the dataset "youth_responses.csv"
 First, we import the data:
 
 ```{r}
+library(tidyverse)
 library(readr)
 youth_responses <- read_csv("youth_responses.csv")
 print(youth_responses)
 ```
 
-# Assignment 2: Diamonds Data
+We run principal component analysis:
+
+```{r}
+yr_data <-
+youth_responses %>%
+filter(complete.cases(.)) %>%
+tbl_df()
+yr_pca<-
+yr_data[,sapply(yr_data,class)=="integer"] %>%
+select(Music:Age)
+yr_pca_result<-princomp(yr_pca,cor=T)
+ggplot(data=data.frame(PC=1:length(yr_pca_result$sdev),
+var_exp=cumsum(yr_pca_result$sdev^2/sum(yr_pca_result$sdev^2))),
+aes(x=PC,y=var_exp)) + geom_line() +
+geom_point() +
+scale_y_continuous(labels = scales::percent,breaks=seq(0,1,length.out=11)) +
+scale_x_continuous(breaks=seq(0,135,by=5))
+```
 
 
 
+It can be observed that, approximately 90 principle components, we can explain 90% of the variation.
 
+Then, we run multi-dimensional scaling for the data. I will run for the columns between "Movies" and "Action":
 
+```{r}
+mds_data <- yr_pca %>% select(Movies:Action)
+print(head(as.data.frame(mds_data)))
+```
 
+```{r}
+yr_dist <- 1 - cor(mds_data)
+yr_mds <- cmdscale(yr_dist,k=2)
+colnames(yr_mds) <- c("x","y")
+print(yr_mds)
+ggplot(data.frame(yr_mds),aes(x=x,y=y)) + geom_text(label=rownames(yr_mds),angle=45,size=4)
+```
 
-
-
-
-
-
-
-
-
-# Assignment 3: Spam Data
-
-
-
-
-
-
-
-
-
-
-
+As per the MDS, we can see that Sci-fi, Action, War and Western movies are highly correlated. Similarly, young people who like horror movies are also seen to like thrillers. Another similar correlation is observed between animated movies and fantasy/fairy tales.
 
 
 
