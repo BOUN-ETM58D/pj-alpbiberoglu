@@ -1,0 +1,178 @@
+---
+title: "Tidy Analysis of OSYM Data"
+author: Alp Biberoglu
+date: April 20, 2018
+output:
+  html_document:
+    toc: false
+  pdf_document:
+    toc: false
+    toc_depth: 3
+---
+
+```{r,echo=FALSE,results="hide",message=FALSE}
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=60),tidy=TRUE)
+```
+
+This is an individual assignment, which aims to analyze the ÖSYM data using Tidyverse.
+
+
+
+1. Get the highest `max_score` programs from each `exam_type`.
+
+First, we start with setting up the workspace by calling tidyverse and loading the dataframe:
+
+```{r}
+library (tidyverse)
+```
+
+```{r}
+load("~/Desktop/ETM 2018 Spring/ETM 58D/Assignments/ÖSYM Individual (20.04)/osym_data_2017_v2.RData")
+```
+
+Then, we print the data to have a brief understanding of the format:
+
+```{r}
+print(osym_data_2017)
+```
+
+In order to find out max_score programs for each exam type, first we need to find out how many exam types are there using unique() function.
+
+```{r}
+attach(osym_data_2017)
+unique(exam_type)
+```
+
+Now, let's find the result for exam type MF_4 as an example:
+
+We create a new dataset with just the information of program name, max score and exam type.
+
+```{r}
+osym_data_2017_q1 <- osym_data_2017 %>% select(program_name, max_score, exam_type)
+```
+
+Then, we filter this dataset for MF_4
+
+```{r}
+filtered_by_mf4 <- osym_data_2017_q1 %>% filter(exam_type=="MF_4")
+```
+
+Now, we arrange this new dataset as per the decreasing order of max_score
+
+```{r}
+filtered_by_mf4 %>% arrange(desc(max_score))
+```
+
+Which shows that for MF_4 exam type, the program with highest max_score is Electrical and Electronics Engineering.
+
+2. Plot the top 10 programs of İSTANBUL ÜNİVERSİTESİ in terms of total quota in a bar chart.
+
+First we filter our original data to obtain all data for just İSTANBUL ÜNİVERSİTESİ, with descending order of "general_quota":
+
+```{r}
+osym_data_2017_q2 <- osym_data_2017 %>% filter(university_name == "İSTANBUL ÜNİVERSİTESİ") %>% arrange(desc(as.numeric(general_quota))) %>% slice(1:10)
+```
+
+Then, we create the bar graph as follows:
+
+```{r}
+ggplot(osym_data_2017_q2, aes(x =program_name, y = as.numeric(general_quota),
+fill = general_quota)) + geom_bar(stat = "identity")+ theme( axis.text.x = element_text(angle = 90))
+```
+
+3. Calculate the fill rate (sum(`general_placement`)/sum(`general_quota`)) per city and return the top 10 cities.
+
+
+osym_data_2017_q3 <- osym_data_2017 %>% select(city,general_placement,general_quota) %>% group_by(city) %>% summarise(fill_rate = sum(general_placement)/sum(general_quota)) %>%
+  arrange(desc(fill_rate)) %>%
+  slice(1:10)
+
+
+Unfortunately, this code created an error and I couldn't solve it, so I can't show a result for this part.
+
+4. Find full (`general_placement` == `general_quota`) Endüstri Mühendisliği programs (use `grepl`) and draw a scatterplot of min_score vs max_score. Set transparency parameter (`alpha`) to 0.7. Set program colors according to whether it is a foundation university or state university. (Tip: State university programs ids start with 1, foundation 2, KKTC 3 and other abroad 4. You can use `substr` function.).
+
+Now, we should see the difference in using "grepl" rather than regular filtering:
+
+```{r}
+ind_eng <- osym_data_2017 %>% filter(grepl("Endüstri Mühendisliği", program_name))
+ind_eng_2 <- osym_data_2017 %>% filter(program_name== "Endüstri Mühendisliği")
+print(ind_eng)
+print(ind_eng_2)
+```
+
+With "grepl", we were able to see all programs that include "Endüstri Mühendisliği", however regular filtering just shows the programs which are directly named as "Endüstri Mühendisliği".
+
+After obtaining the data, we find the full programs and make the scatter plot:
+
+```{r}
+full_programs <- ind_eng %>% filter(general_quota==general_placement)
+print(full_programs)
+```
+
+Out of 209 programs, 119 are full.
+
+```{r}
+program_id <- as.numeric(program_id)
+ggplot(data = full_programs, aes(x = min_score, y = max_score)) +
+geom_point(alpha=0.7)
+```
+
+Also, among full programs, we can see how many are state and how many are foundation:
+
+```{r}
+program_id <- as.numeric(program_id)
+devlet <- full_programs %>%  filter(program_id<=100000000)
+vakif <- full_programs %>%  filter(program_id<=200000000, program_id>=100000000)
+print(devlet)
+print(vakif)
+```
+
+
+
+5. Find the top 10 faculties with the highest quotas and draw a bar chart. Ignore similar names and typos in faculty names.
+
+```{r}
+top10 <- osym_data_2017 %>% group_by(faculty_name) %>% summarise(total_quota = sum(as.numeric(general_quota)))
+top10 <- top10 %>% arrange(desc(total_quota)) %>% slice(1:10) 
+print(top10)
+```
+
+
+6. Find all full medicine programs (Tıp but not Tıp Mühendisliği) of foundation universities group by university calculate total quotas per university and maximum max_score and minimum min_score as bounds, ordered and colored by total quota. (Tip: Use `geom_crossbar`)
+
+We can again use "grepl" to find requested programs:
+
+```{r}
+medicals <- osym_data_2017 %>% filter(grepl("Tıp", program_name))  %>% filter(!grepl("Mühendis", program_name))
+medicals <- medicals %>% group_by(university_name) %>% summarise(total_quota = sum(as.numeric(general_quota)), max = max(max_score), min = min(min_score))
+print(medicals)
+```
+
+Now we can plot the graph accordingly:
+
+```{r}
+ggplot(medicals) + geom_crossbar(aes(x=university_name, ymin= min, ymax= max, y=500)) + theme( axis.text.x = element_text(angle = 90, size = 5))
+```
+
+
+
+7. Freestyle: Do an analysis that compares the mechanical engineering (Makine Mühendisliği) and civil engineering (İnşaat Mühendisliği) programs.
+
+```{r}
+
+```
+
+8. Freestyle: Compare Koç University with Bilkent University.
+
+```{r}
+
+```
+
+9. Freestyle: Do your best.
+
+```{r}
+
+```
+
